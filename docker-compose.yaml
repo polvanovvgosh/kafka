@@ -1,7 +1,6 @@
 version: '3'
 services:
     frontend-nginx:
-        container_name: frontend
         build:
             context: ./frontend/docker
             dockerfile: nginx.docker
@@ -11,7 +10,6 @@ services:
         -   "8080:80"
     
     api-nginx:
-        container_name: api
         build:
             context: ./api/docker
             dockerfile: nginx.docker
@@ -21,10 +19,15 @@ services:
         -   "8081:80"
     
     api-php-fpm:
-        container_name: php-api
         build:
             context: ./api/docker
             dockerfile: php-fpm.docker
         volumes:
         -   ./api:/var/www/api
         
+    frontend-nodejs:
+        image: library/node:latest
+        volumes:
+            -   ./frontend:/var/www/frontend
+        working_dir: /var/www/frontend
+        tty: true
