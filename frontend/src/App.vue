@@ -32,6 +32,8 @@ export default {
 
 <style lang="scss">
 
+@import "assets/scss/variables.scss";
+@import "~bootstrap/scss/bootstrap.scss";
 @import "~bootstrap/dist/css/bootstrap.css";
 @import "~bootstrap-vue/dist/bootstrap-vue.css";
 
