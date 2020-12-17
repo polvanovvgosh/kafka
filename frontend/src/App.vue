@@ -31,9 +31,13 @@ export default {
 </script>
 
 <style lang="scss">
-                  body {
-                    min-height: 100vh;
-                  }
+
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "~bootstrap-vue/dist/bootstrap-vue.css";
+
+body {
+  min-height: 100vh;
+}
 #app {
   min-height: 100vh;
   display: flex;
