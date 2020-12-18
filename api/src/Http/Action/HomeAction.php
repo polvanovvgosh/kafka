@@ -5,19 +5,21 @@ declare(strict_types=1);
 namespace Api\Http\Action;
 
 
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Laminas\Diactoros\Response\JsonResponse;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class HomeAction
+class HomeAction implements RequestHandlerInterface
 {
-    public function __invoke(Request $request, Response $response): Response
-    {
-        $data = [
-            'name'    => 'Api',
-            'version' => '1.0',
-        ];
-        $payload = json_encode($data);
 
-        return $response->withJson($payload);
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        return new JsonResponse([
+        'name'    => 'Api',
+        'version' => '1.0',
+    ]);
+
     }
 }
