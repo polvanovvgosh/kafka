@@ -11,4 +11,6 @@ interface UserRepository
     public function hasByEmail(email $email): bool;
 
     public function add(User $user): void;
+
+    public function getUserByEmail(Email $email): User;
 }

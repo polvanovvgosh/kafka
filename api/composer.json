@@ -5,6 +5,7 @@
   "require": {
     "php": ">=7.4",
     "ext-json": "^7.4",
+    "doctrine/orm": "^2.8",
     "laminas/laminas-diactoros": "^2.5",
     "psr/http-server-handler": "^1.0",
     "ramsey/uuid": "^4.1",

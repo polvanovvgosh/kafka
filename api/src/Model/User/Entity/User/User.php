@@ -9,11 +9,29 @@ class User
     private const STATUS_WAIT = 'wait';
     private const STATUS_ACTIVE = 'active';
 
+    /**
+     * @var UserId
+     */
     private UserId $id;
+    /**
+     * @var \DateTimeImmutable
+     */
     private \DateTimeImmutable $createdAt;
+    /**
+     * @var Email
+     */
     private Email $email;
+    /**
+     * @var string
+     */
     private string $passwordHash;
-    private ConfirmToken $confirmToken;
+    /**
+     * @var ConfirmToken|null
+     */
+    private $confirmToken;
+    /**
+     * @var string
+     */
     private string $status;
 
     /**
@@ -74,9 +92,9 @@ class User
     }
 
     /**
-     * @return ConfirmToken
+     * @return ConfirmToken|null
      */
-    public function getConfirmToken(): ConfirmToken
+    public function getConfirmToken(): ?ConfirmToken
     {
         return $this->confirmToken;
     }
@@ -95,5 +113,26 @@ class User
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    /**
+     * @param string $token
+     * @param \DateTimeImmutable $date
+     */
+    public function confirmSignUp(string $token, \DateTimeImmutable $date)
+    {
+        if ($this->isActive()) {
+            throw new \DomainException('User is already active.');
+        }
+        if (!$this->confirmToken->isEqualTo($token)) {
+            throw new \DomainException('Confirm token is invalid.');
+        }
+        if ($this->confirmToken->isExpiredTo($date)) {
+            throw new \DomainException('Confirm token is expired.');
+        }
+
+        $this->status = self::STATUS_ACTIVE;
+        $this->confirmToken = null;
+
     }
 }

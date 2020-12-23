@@ -24,6 +24,8 @@ services:
             dockerfile: php-fpm.docker
         volumes:
         -   ./api:/var/www/api
+        depends_on:
+                - api-postgres
         
     frontend-nodejs:
         image: library/node:latest
@@ -39,4 +41,17 @@ services:
             volumes:
             -   ./api:/var/www/api
             working_dir: /var/www/api
+            depends_on:
+                -   api-postgres
             tty: true
+
+    api-postgres:
+        image: library/postgres:latest
+        volumes:
+            - ./api/var/docker/postgres:/var/lib/postgresql/data
+        environment:
+            - "POSTGRES_USER=api"
+            - "POSTGRES_PASSWORD=secret"
+            - "POSTGRES_DB=api"
+        ports:
+            - "54321:5432"
