@@ -5,11 +5,14 @@
   "require": {
     "php": ">=7.4",
     "ext-json": "^7.4",
+    "doctrine/migrations": "^3.0",
     "doctrine/orm": "^2.8",
+    "laminas/laminas-config-aggregator": "^1.4",
     "laminas/laminas-diactoros": "^2.5",
     "psr/http-server-handler": "^1.0",
     "ramsey/uuid": "^4.1",
     "slim/slim": "^3.0",
+    "symfony/console": "^5.2",
     "symfony/dotenv": "^5.2"
   },
   "require-dev": {
@@ -27,6 +30,8 @@
     }
   },
   "scripts": {
+    "migration": "php bin/migrations.php --ansi",
+    "app": "php bin/app.php --ansi",
     "test": "phpunit --colors=always"
   }
 }
