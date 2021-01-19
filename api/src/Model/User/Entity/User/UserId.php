@@ -13,6 +13,14 @@ class UserId
 {
     private string $id;
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
     public function __construct(string $id)
     {
         Assert::notEmpty($id);

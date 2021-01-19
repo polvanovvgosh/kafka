@@ -21,4 +21,13 @@ class Email
 
         $this->email = mb_strtolower($email);
     }
+
+    /**
+     * @return false|string|string[]
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
 }

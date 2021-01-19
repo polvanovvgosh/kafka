@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace Api\Model\User\Entity\User;
 
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\Table(name="user_users", uniqueConstraints={
+ *     @UniqueConstraint(columns={"name", "email"})
+ *     })
+ */
 class User
 {
     private const STATUS_WAIT = 'wait';
@@ -11,26 +20,33 @@ class User
 
     /**
      * @var UserId
+     * @ORM\Column(type="user_user_id")
      */
     private UserId $id;
+
     /**
      * @var \DateTimeImmutable
+     * @ORM\Column(type="date_immutable")
      */
     private \DateTimeImmutable $createdAt;
     /**
      * @var Email
+     * @ORM\Column(type="user_user_email")
      */
     private Email $email;
     /**
      * @var string
+     * @ORM\Column(type="string", name="password_hash")
      */
     private string $passwordHash;
     /**
-     * @var ConfirmToken|null
+     * @var ConfirmToken
+     * @ORM\Embedded(class="ConfirmToken", columnPrefix="confirm_token")
      */
     private $confirmToken;
     /**
      * @var string
+     * @ORM\Column(type="string", length=16)
      */
     private string $status;
 
