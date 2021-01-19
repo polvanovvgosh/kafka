@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-use Api\Http\Action;
 use Slim\App;
-use Slim\Container;
 use Symfony\Component\Dotenv\Dotenv;
 
 chdir(dirname(__DIR__));
