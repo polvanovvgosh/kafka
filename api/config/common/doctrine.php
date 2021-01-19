@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use Api\Infrastructure\Doctrine\Type;
 use Doctrine\Common\Cache\FilesystemCache;
+use Doctrine\DBAL;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Setup;
@@ -20,6 +22,13 @@ return [
             ),
             false
         );
+
+        foreach ($params['types'] as $type => $class) {
+            if (!DBAL\Types\Type::hasType($type)) {
+                DBAL\Types\Type::addType($type, $class);
+            }
+        }
+
         return EntityManager::create(
             $params['connection'],
             $config
@@ -28,12 +37,20 @@ return [
 
     'config' => [
         'doctrine' => [
-            'dev_mode' => true,
+            'dev_mode' => false,
             'cache_dir' => 'var/cache/doctrine',
             'metadata_dirs' => ['src/Model/User/Entity'],
             'connection' => [
-                'url' => getenv('API_DB_URL'),
+                'dbname'   => getenv('API_DB_NAME'),
+                'user'     => getenv('API_DB_USER_NAME'),
+                'password' => getenv('API_DB_PASSWORD'),
+                'host'     => getenv('API_DB_HOST'),
+                'driver'   => 'pdo_pgsql',
             ],
+            'types' => [
+                Type\User\UserIdType::NAME => Type\User\UserIdType::class,
+                Type\User\EmailType::NAME => Type\User\EmailType::class
+            ]
         ],
     ],
 ];
