@@ -9,10 +9,6 @@ use Doctrine\ORM\Tools\Setup;
 use Psr\Container\ContainerInterface;
 
 return [
-    'settings' => [
-        'addContentLengthHeader' => false,
-        'displayErrorDetails' => (bool)getenv('API_DEBUG'),
-    ],
     EntityManagerInterface::class => function (ContainerInterface $container) {
         $params = $container['config']['doctrine'];
         $config = Setup::createAnnotationMetadataConfiguration(

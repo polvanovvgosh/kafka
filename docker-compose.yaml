@@ -24,8 +24,10 @@ services:
             dockerfile: php-fpm.docker
         volumes:
         -   ./api:/var/www/api
+        env_file:
+            - api/.env
         depends_on:
-                - api-postgres
+            - api-postgres
         
     frontend-nodejs:
         image: library/node:latest
@@ -41,6 +43,8 @@ services:
             volumes:
             -   ./api:/var/www/api
             working_dir: /var/www/api
+            env_file:
+                - api/.env
             depends_on:
                 -   api-postgres
             tty: true
