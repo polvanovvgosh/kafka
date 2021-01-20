@@ -4,29 +4,39 @@ declare(strict_types=1);
 
 namespace Api\Model\User\Entity\User;
 
+use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\This;
 use Webmozart\Assert\Assert;
 
+/**
+ * Class ConfirmToken
+ * @ORM\Embeddable()
+ *
+ */
 class ConfirmToken
 {
     /**
      * @var string
+     * @ORM\Column(type="string", nullable=true)
      */
     private string $token;
     /**
      * @var \DateTimeImmutable
+     * @ORM\Column(type="date_immutable", nullable=true )
      */
     private \DateTimeImmutable $expires;
 
     /**
      * ConfirmToken constructor.
      *
-     * @param string $token
+     * @param string             $token
      * @param \DateTimeImmutable $expires
+     *
      */
     public function __construct(string $token, \DateTimeImmutable $expires)
     {
         Assert::notEmpty($token);
-        $this->token = $token;
+        $this->token   = $token;
         $this->expires = $expires;
     }
 
@@ -56,6 +66,14 @@ class ConfirmToken
     public function getToken(): string
     {
         return $this->token;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return empty($this->token);
     }
 
 

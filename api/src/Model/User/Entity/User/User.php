@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="user_users", uniqueConstraints={
- *     @UniqueConstraint(columns={"name", "email"})
+ *     @UniqueConstraint(columns={"email"})
  *     })
  */
 class User
@@ -150,5 +150,15 @@ class User
         $this->status = self::STATUS_ACTIVE;
         $this->confirmToken = null;
 
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function checkEmbeds()
+    {
+        if ($this->confirmToken->isEmpty()) {
+            $this->confirmToken = null;
+        }
     }
 }
