@@ -41,11 +41,7 @@ return [
             'cache_dir' => 'var/cache/doctrine',
             'metadata_dirs' => ['src/Model/User/Entity'],
             'connection' => [
-                'dbname'   => getenv('API_DB_NAME'),
-                'user'     => getenv('API_DB_USER_NAME'),
-                'password' => getenv('API_DB_PASSWORD'),
-                'host'     => getenv('API_DB_HOST'),
-                'driver'   => 'pdo_pgsql',
+                'url' => getenv('API_DB_URL'),
             ],
             'types' => [
                 Type\User\UserIdType::NAME => Type\User\UserIdType::class,

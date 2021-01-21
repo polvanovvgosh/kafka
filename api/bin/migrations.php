@@ -12,7 +12,7 @@ return [
     ],
 
     'migrations_paths' => [
-        'App\Data\Migrations' => '/src/Data/Migrations',
+        'App\Data\Migrations' => './src/Data/Migrations',
     ],
 
     'all_or_nothing' => true,

@@ -11,6 +11,7 @@ use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
+use Doctrine\Migrations\Tools\Console\Command;
 
 chdir(dirname(__DIR__));
 require 'vendor/autoload.php';
@@ -41,11 +42,25 @@ $cli->getHelperSet()->set(new EntityManagerHelper($entityManager), 'em');
 $dependencyFactory = DependencyFactory::fromConnection($configuration, new ExistingConnection($connection));
 
 ConsoleRunner::addCommands($cli);
-\Doctrine\Migrations\Tools\Console\ConsoleRunner::addCommands($cli);
 
 $commands = $container->get('config')['console']['commands'];
+
+$cli->addCommands(array(
+    new Command\DumpSchemaCommand($dependencyFactory),
+    new Command\ExecuteCommand($dependencyFactory),
+    new Command\GenerateCommand($dependencyFactory),
+    new Command\LatestCommand($dependencyFactory),
+    new Command\ListCommand($dependencyFactory),
+    new Command\MigrateCommand($dependencyFactory),
+    new Command\RollupCommand($dependencyFactory),
+    new Command\StatusCommand($dependencyFactory),
+    new Command\SyncMetadataCommand($dependencyFactory),
+    new Command\VersionCommand($dependencyFactory),
+    new Command\DiffCommand($dependencyFactory),
+));
 
 foreach ($commands as $command) {
     $cli->add($container->get($command));
 }
+
 $cli->run();
