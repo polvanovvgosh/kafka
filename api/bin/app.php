@@ -3,61 +3,69 @@
 declare(strict_types=1);
 
 use Doctrine\DBAL\DriverManager;
-use Doctrine\Migrations\Configuration\Connection\ExistingConnection;
-use Doctrine\Migrations\Configuration\Migration\PhpFile;
+use Doctrine\Migrations\Configuration\Configuration;
+use Doctrine\Migrations\Configuration\EntityManager\ExistingEntityManager;
+use Doctrine\Migrations\Configuration\Migration\ExistingConfiguration;
 use Doctrine\Migrations\DependencyFactory;
+use Doctrine\Migrations\Metadata\Storage\TableMetadataStorageConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Dotenv\Dotenv;
 use Doctrine\Migrations\Tools\Console\Command;
 
 chdir(dirname(__DIR__));
 require 'vendor/autoload.php';
-
-if (file_exists('.env')) {
-    $dotenv = new Dotenv();
-    $dotenv->load('.env');
-}
 
 /**
  * @var \Psr\Container\ContainerInterface $container
  */
 $container = require 'config/container.php';
 
-$cli = new Application('Application console');
-
 
 $entityManager = $container->get(EntityManagerInterface::class);
-$connection = $entityManager->getConnection();
+$connection    = DriverManager::getConnection($container->get('config')['doctrine']['connection']);
 
-$migrationConnection = DriverManager::getConnection($container['config']['doctrine']['connection']);
+$configuration = new Configuration($connection);
 
-$configuration = new PhpFile('bin/migrations.php');
+$configuration->addMigrationsDirectory('App\Data\Migrations', './src/Data/Migrations');
+$configuration->setAllOrNothing(true);
+$configuration->setCheckDatabasePlatform(false);
 
+$storageConfiguration = new TableMetadataStorageConfiguration();
+$storageConfiguration->setTableName('doctrine_migration_versions');
 
+$configuration->setMetadataStorageConfiguration($storageConfiguration);
+
+$dependencyFactory = DependencyFactory::fromEntityManager(
+    new ExistingConfiguration($configuration),
+    new ExistingEntityManager($entityManager)
+);
+
+$cli = new Application('Application console');
 
 $cli->getHelperSet()->set(new EntityManagerHelper($entityManager), 'em');
-$dependencyFactory = DependencyFactory::fromConnection($configuration, new ExistingConnection($connection));
+$cli->setCatchExceptions(true);
 
 ConsoleRunner::addCommands($cli);
 
 $commands = $container->get('config')['console']['commands'];
 
-$cli->addCommands(array(
-    new Command\DumpSchemaCommand($dependencyFactory),
-    new Command\ExecuteCommand($dependencyFactory),
-    new Command\GenerateCommand($dependencyFactory),
-    new Command\LatestCommand($dependencyFactory),
-    new Command\ListCommand($dependencyFactory),
-    new Command\MigrateCommand($dependencyFactory),
-    new Command\RollupCommand($dependencyFactory),
-    new Command\StatusCommand($dependencyFactory),
-    new Command\SyncMetadataCommand($dependencyFactory),
-    new Command\VersionCommand($dependencyFactory),
-    new Command\DiffCommand($dependencyFactory),
-));
+$cli->addCommands(
+    [
+        new Command\DumpSchemaCommand($dependencyFactory),
+        new Command\ExecuteCommand($dependencyFactory),
+        new Command\GenerateCommand($dependencyFactory),
+        new Command\LatestCommand($dependencyFactory),
+        new Command\ListCommand($dependencyFactory),
+        new Command\MigrateCommand($dependencyFactory),
+        new Command\RollupCommand($dependencyFactory),
+        new Command\StatusCommand($dependencyFactory),
+        new Command\SyncMetadataCommand($dependencyFactory),
+        new Command\VersionCommand($dependencyFactory),
+        new Command\DiffCommand($dependencyFactory),
+    ]
+);
 
 foreach ($commands as $command) {
     $cli->add($container->get($command));
