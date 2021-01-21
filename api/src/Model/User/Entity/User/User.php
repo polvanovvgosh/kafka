@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @ORM\Table(name="user_users", uniqueConstraints={
- *     @UniqueConstraint(columns={"email"})
+ *     @ORM\UniqueConstraint(columns={"email"})
  *     })
  */
 class User
@@ -21,6 +21,7 @@ class User
     /**
      * @var UserId
      * @ORM\Column(type="user_user_id")
+     * @ORM\Id()
      */
     private UserId $id;
 
