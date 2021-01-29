@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Api\Test\Feature;
 
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\ORM\EntityManagerInterface;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\Uri;
@@ -42,6 +46,25 @@ class WebTestCase extends TestCase
         $app = new App($container);
         (require 'config/routes.php')($app);
         return $app;
+    }
+
+    protected function loadFixtures(array $fixtures): void
+    {
+        $container = $this->container();
+        $em = $container->get(EntityManagerInterface::class);
+        $loader = new Loader();
+
+        foreach ($fixtures as $class) {
+            if ($container->has($class)) {
+                $fixture = $container->get($class);
+            } else {
+                $fixture = new $class;
+            }
+            $loader->addFixture($fixture);
+        }
+
+        $executor = new ORMExecutor($em, new ORMPurger($em));
+        $executor->execute($loader->getFixtures());
     }
 
     private function container(): ContainerInterface
