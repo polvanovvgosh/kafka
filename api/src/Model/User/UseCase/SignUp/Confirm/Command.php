@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Api\Model\User\UseCase\SingUp\Request;
+
+namespace Api\Model\User\UseCase\SignUp\Confirm;
 
 
 class Command
 {
     public string $email;
-    public string $password;
+    public string $token;
 }

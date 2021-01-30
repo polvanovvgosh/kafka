@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-namespace Api\Model\User\UseCase\SingUp\Confirm;
+namespace Api\Model\User\UseCase\SignUp\Confirm;
 
 
 use Api\Model\Flusher;
