@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 use Api\Model;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Api\Http\Validator\Validator;
 
 return [
 
@@ -19,8 +20,16 @@ return [
             ->getValidator();
     },
 
+    Validator::class => function (ContainerInterface $container ){
+        return new Validator($container->get(ValidatorInterface::class));
+    },
+
     Middleware\DomainExceptionMiddleware::class => function () {
         return new Middleware\DomainExceptionMiddleware();
+    },
+
+    Middleware\ValidationExceptionMiddleware::class => function () {
+        return new Middleware\ValidationExceptionMiddleware();
     },
 
     Action\HomeAction::class => function () {
@@ -30,14 +39,14 @@ return [
     Action\Auth\SignUp\RequestAction::class => function (ContainerInterface $container) {
         return new Action\Auth\SignUp\RequestAction(
             $container->get(Model\User\UseCase\SignUp\Request\Handler::class),
-            $container->get(ValidatorInterface::class)
+            $container->get(Validator::class)
         );
     },
 
     Action\Auth\SignUp\ConfirmAction::class => function (ContainerInterface $container ){
         return new Action\Auth\SignUp\ConfirmAction(
             $container->get(Model\User\UseCase\SignUp\Confirm\Handler::class),
-            $container->get(ValidatorInterface::class)
+            $container->get(Validator::class)
             );
     },
 ];
