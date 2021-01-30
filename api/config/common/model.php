@@ -18,7 +18,7 @@ return [
         return new UserInfrastructure\Service\RandomConfirmTokenizer(new \DateInterval($interval));
     },
 
-    \Api\Model\Flusher::class => function (ContainerInterface $container) {
+    Api\Model\Flusher::class => function (ContainerInterface $container) {
         $em = $container->get(EntityManagerInterface::class);
 
         return new DoctrineFlusher($em);
@@ -35,6 +35,12 @@ return [
              $container->get(UserModel\Service\ConfirmTokenizer::class),
              $container->get(Api\Model\Flusher::class)
          );
+     },
+     UserModel\UseCase\SignUp\Confirm\Handler::class => function (ContainerInterface $container) {
+        return new UserModel\UseCase\SignUp\Confirm\Handler(
+            $container->get(UserModel\Entity\User\UserRepository::class),
+            $container->get(Api\Model\Flusher::class)
+        );
      },
 
     'config' => [

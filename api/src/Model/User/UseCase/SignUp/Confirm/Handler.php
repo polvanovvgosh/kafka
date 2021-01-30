@@ -30,7 +30,7 @@ class Handler
        $this->flusher = $flusher;
    }
 
-    public function handler(Command $command)
+    public function handle(Command $command)
     {
         $user = $this->userRepository->getUserByEmail(new Email($command->email));
 
