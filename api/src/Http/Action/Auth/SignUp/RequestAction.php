@@ -12,6 +12,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestAction implements RequestHandlerInterface
 {
@@ -20,10 +21,15 @@ class RequestAction implements RequestHandlerInterface
      * @var Handler
      */
     private Handler $handler;
+    /**
+     * @var ValidatorInterface
+     */
+    private ValidatorInterface $validator;
 
-    public function __construct(Handler $handler)
+    public function __construct(Handler $handler, ValidatorInterface $validator)
     {
         $this->handler = $handler;
+        $this->validator = $validator;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -34,6 +40,16 @@ class RequestAction implements RequestHandlerInterface
 
         $command->email = $body['email'] ?? '';
         $command->password = $body['password'] ?? '';
+
+        $violations = $this->validator->validate($command);
+        if ($violations->count() > 0) {
+            $errors = [];
+            foreach ($violations as $violation) {
+                $errors[$violation->getPropertyPath()] = $violation->getMessage();
+            }
+
+            return new JsonResponse(['errors' => $errors], 400);
+        }
 
         $this->handler->handle($command);
 
