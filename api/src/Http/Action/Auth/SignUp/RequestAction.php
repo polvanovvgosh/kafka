@@ -27,20 +27,26 @@ class RequestAction implements RequestHandlerInterface
      */
     private Validator $validator;
 
+    /**
+     * RequestAction constructor.
+     *
+     * @param Handler   $handler
+     * @param Validator $validator
+     */
     public function __construct(Handler $handler, Validator $validator)
     {
         $this->handler = $handler;
         $this->validator = $validator;
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return ResponseInterface
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $body = json_decode($request->getBody()->getContents(), true);
-
-        $command = new Command();
-
-        $command->email = $body['email'] ?? '';
-        $command->password = $body['password'] ?? '';
+        $command = $this->deserialize($request);
 
         if ($errors = $this->validator->validate($command)) {
             throw new ValidationException($errors);
@@ -53,5 +59,22 @@ class RequestAction implements RequestHandlerInterface
                 'email' => $command->email,
             ], 201
         );
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return Command
+     */
+    private function deserialize(ServerRequestInterface $request): Command
+    {
+        $body = $request->getParsedBody();
+
+        $command = new Command();
+
+        $command->email = $body['email'] ?? '';
+        $command->password = $body['password'] ?? '';
+
+        return $command;
     }
 }
