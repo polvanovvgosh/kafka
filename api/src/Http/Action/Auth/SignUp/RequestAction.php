@@ -68,7 +68,7 @@ class RequestAction implements RequestHandlerInterface
      */
     private function deserialize(ServerRequestInterface $request): Command
     {
-        $body = $request->getParsedBody();
+        $body = json_decode($request->getBody()->getContents(), true);
 
         $command = new Command();
 
