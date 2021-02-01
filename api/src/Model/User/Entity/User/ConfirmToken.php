@@ -76,5 +76,16 @@ class ConfirmToken
         return empty($this->token);
     }
 
+    public function validate(string $token, \DateTimeImmutable $date): void
+    {
+        if (!$this->isEqualTo($token)) {
+            throw new \DomainException('Confirm token is invalid.');
+        }
+        if ($this->isExpiredTo($date)) {
+            throw new \DomainException('Confirm token is expired.');
+        }
+
+    }
+
 
 }
