@@ -107,7 +107,6 @@ class ConfirmTest extends WebTestCase
             'errors' => [
                 'email' => 'This value is not a valid email address.',
                 'token' => 'This value should not be blank.',
-
             ],
         ], $data);
     }

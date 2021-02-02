@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Api\Model\User\Entity\User;
 
+use Api\Model\AggregateRoot;
+use Api\Model\EventTrait;
+use Api\Model\User\Entity\User\Event\UserConfirmed;
+use Api\Model\User\Entity\User\Event\UserCreated;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -13,8 +17,10 @@ use Doctrine\ORM\Mapping as ORM;
  *     @ORM\UniqueConstraint(columns={"email"})
  *     })
  */
-class User
+class User implements AggregateRoot
 {
+    use EventTrait;
+
     private const STATUS_WAIT = 'wait';
     private const STATUS_ACTIVE = 'active';
 
@@ -44,7 +50,7 @@ class User
      * @var ConfirmToken
      * @ORM\Embedded(class="ConfirmToken", columnPrefix="confirm_token")
      */
-    private $confirmToken;
+    private  $confirmToken;
     /**
      * @var string
      * @ORM\Column(type="string", length=16)
@@ -74,6 +80,7 @@ class User
         $this->passwordHash = $hash;
         $this->confirmToken = $confirmToken;
         $this->status = self::STATUS_WAIT;
+        $this->recordEvent(new UserCreated($this->id, $this->email, $this->confirmToken));
     }
 
     /**
@@ -141,15 +148,11 @@ class User
         if ($this->isActive()) {
             throw new \DomainException('User is already active.');
         }
-        if (!$this->confirmToken->isEqualTo($token)) {
-            throw new \DomainException('Confirm token is invalid.');
-        }
-        if ($this->confirmToken->isExpiredTo($date)) {
-            throw new \DomainException('Confirm token is expired.');
-        }
 
+        $this->confirmToken->validate($token, $date);
         $this->status = self::STATUS_ACTIVE;
         $this->confirmToken = null;
+        $this->recordEvent(new UserConfirmed($this->id));
 
     }
 
