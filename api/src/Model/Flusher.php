@@ -8,5 +8,5 @@ namespace Api\Model;
 
 interface Flusher
 {
-    public function flush(): void;
+    public function flush(AggregateRoot ...$root): void;
 }
