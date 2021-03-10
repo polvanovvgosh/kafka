@@ -46,7 +46,7 @@ return [
 
     'config' => [
         'auth' => [
-            'signup_confirm_interval' => 'PT5M',
+            'signup_confirm_interval' => 'P1D',
         ]
     ]
 ];

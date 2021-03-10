@@ -20,9 +20,11 @@ class RandomConfirmTokenizer implements ConfirmTokenizer
 
     public function generate(): ConfirmToken
     {
+        $date = (new \DateTimeImmutable('now'))->add($this->interval);
+
         return new ConfirmToken(
             (string)random_int(100000, 999999),
-            (new \DateTimeImmutable())->add($this->interval)
+            $date
         );
     }
 }
